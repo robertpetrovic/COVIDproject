@@ -45,7 +45,7 @@ df.loc[df['Cases in Last 2 Weeks']<0, 'Cases in Last 2 Weeks'] = 0
 populations = pd.read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/63d02b9d1073eff62827daf155a4fe1ef4ab7188/pop_est_2019.csv')
 populations.columns = ['FIPS_code','Population']
 
-df = df.merge(populations,on='County',how='left')
+df = df.merge(populations,on='FIPS_code',how='left')
 df['2 Weeks Cases per 100,000'] = (100000*df.loc[:,'Cases in Last 2 Weeks']/df.loc[:,'Population']).astype(int)
 
 #county rt values calculated by Xihong Lin Lab Group at Harvard
