@@ -42,14 +42,8 @@ df.columns = ['County','FIPS_code','Cases in Last 2 Weeks']
 df.loc[df['Cases in Last 2 Weeks']<0, 'Cases in Last 2 Weeks'] = 0
 
 #county population data from US Census
-#filtered for only Texas counties, then cleaned the county name strings to match df (covid case) county naming
-populations = pd.read_excel('https://www2.census.gov/programs-surveys/popest/tables/2010-2019/counties/totals/co-est2019-annres.xlsx',
-                            skiprows=4,skipfooter=6,usecols=[0,12],names=['County','Population'])
-populations = populations[populations['County'].str.contains(', Texas',regex=False)]
-county_names = populations['County']
-county_names = [x.strip('.') for x in county_names]
-county_names = [x.split(' County')[0] for x in county_names]
-populations['County'] = county_names
+populations = pd.read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/63d02b9d1073eff62827daf155a4fe1ef4ab7188/pop_est_2019.csv')
+populations.columns = ['FIPS_code','Population']
 
 df = df.merge(populations,on='County',how='left')
 df['2 Weeks Cases per 100,000'] = (100000*df.loc[:,'Cases in Last 2 Weeks']/df.loc[:,'Population']).astype(int)
