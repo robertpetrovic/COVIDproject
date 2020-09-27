@@ -74,19 +74,21 @@ df = df.merge(county_rts,on='FIPS_code',how='left')
 
 import math
 
+
 #projects how many cases there will be in a given amount of days
 def projection(row,people,days):
     current = row['Cases in Last 2 Weeks']
-    rt = round(row['rt'],5)
+    rt = row['rt']
     
     #formula was derived manually from a series of time spans where the nationwide reproductive value (Rt) was 
     #constant, case numbers as a function of time were used to generate exponential growth equations, then a line of 
-    #best fit was generated comparing Rt values to the functions' exponents
+    #best fit was generated comparing Rt values to the functions' exponents to determine the k factor constant (0.222)
     if (days>=30)&(current * round(math.exp((rt-1)*0.222*30)) > row['Population']):
-        #an exponential model is used, so the hypothetical case number ceiling is set to the county's population
+        #an exponential model is used, so the hypothetical case number ceiling is set to the county's population to
+        #prevent memory overflow
         cases = row['Population']
     else:
-        cases = current * round(math.exp((rt-1)*0.222*days))
+        cases = int(current * math.exp((rt-1)*0.222*days))
         
     if cases>row['Population']: cases = row['Population']
     
